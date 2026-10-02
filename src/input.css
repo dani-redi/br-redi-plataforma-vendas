@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+/* Fontes hospedadas junto com a LP (sem Google Fonts: evita CSS externo bloqueando a renderização).
+   Plus Jakarta Sans (OFL): variável 400–800, subset latino (cobre o português).
+   Material Symbols Rounded (Apache 2.0): só os ícones usados, FILL 1 / wght 500 / GRAD 0 / opsz 28.
+   Ao usar um ícone novo, gere o subset de novo com o nome dele em icon_names:
+   https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@28,500,1,0&icon_names=... */
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("./fonts/plus-jakarta-sans-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Material Symbols Rounded";
+  font-style: normal;
+  font-weight: 500;
+  font-display: block;
+  src: url("./fonts/material-symbols-rounded-subset.woff2") format("woff2");
+}
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --color-primary: #b539e6;
+  --color-secondary: #6200ee;
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  --animate-marquee: marquee 15s linear infinite;
+
+  @keyframes marquee {
+    to { transform: translateX(-50%); }
+  }
+}
+
+@layer base {
+  body {
+    background: #f9fafb;
+    color: #475569;
+    overflow-x: hidden;
+    font-family: var(--font-sans);
+  }
+}
+
+/* Mesmas regras que o CSS do Google Fonts aplicava à classe */
+.material-symbols-rounded {
+  font-family: "Material Symbols Rounded";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, #b539e6, #6200ee);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Em @layer components para que utilitários (px-*, py-*, text-*) sobrescrevam */
+@layer components {
+  /* Título padrão de todas as seções (H1 do hero e H2s) */
+  .section-title {
+    @apply text-2xl font-extrabold leading-[1.15] tracking-tight text-slate-900 sm:text-3xl md:text-4xl lg:text-5xl;
+  }
+
+  .btn-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background: #0088ff;
+    color: #fff;
+    font-weight: 600;
+    padding: 0.625rem 1.5rem;
+    transition: transform 0.2s, background-color 0.2s;
+  }
+  .btn-cta:hover {
+    background: rgba(0, 136, 255, 0.9);
+    transform: scale(1.05);
+  }
+}
+
+/* Tooltips: hover no desktop, .open (JS) no mobile. Em @layer para aceitar w-*, left-* etc. */
+@layer components {
+  .tip {
+    position: absolute;
+    z-index: 30;
+    width: 14rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    background: #0f172a;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.4;
+    text-align: center;
+    white-space: normal;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+}
+.has-tip.open > .tip {
+  opacity: 1;
+  visibility: visible;
+}
+/* Hover só em dispositivos com mouse (evita "hover preso" no toque do iOS) */
+@media (hover: hover) {
+  .has-tip:hover > .tip {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* Fundos com brilhos da marca + grade de pontos (hero, explore, dores) */
+.bg-hero,
+.bg-explore,
+.bg-pain {
+  position: relative;
+  --dot: rgba(98, 0, 238, 0.08);
+}
+.bg-hero::before,
+.bg-explore::before,
+.bg-pain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+  background-size: 22px 22px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 15%, #000 85%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 15%, #000 85%, transparent);
+  pointer-events: none;
+}
+
+/* Hero: claro, base #f4f1fb */
+.bg-hero {
+  background:
+    radial-gradient(45% 40% at 0% 10%, rgba(181, 57, 230, 0.18), transparent 70%),
+    radial-gradient(40% 35% at 100% 20%, rgba(0, 136, 255, 0.14), transparent 70%),
+    radial-gradient(55% 35% at 50% 100%, rgba(98, 0, 238, 0.12), transparent 70%),
+    #f4f1fb;
+}
+.bg-hero::before {
+  /* no topo a grade encosta no header, sem fade */
+  -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent);
+  mask-image: linear-gradient(to bottom, #000 70%, transparent);
+}
+
+/* Explore: escuro */
+.bg-explore {
+  --dot: rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(60% 45% at 0% 0%, rgba(181, 57, 230, 0.45), transparent 70%),
+    radial-gradient(50% 40% at 100% 35%, rgba(98, 0, 238, 0.5), transparent 70%),
+    radial-gradient(60% 35% at 50% 100%, rgba(0, 136, 255, 0.25), transparent 70%),
+    #12072a;
+}
+
+/* Dores: claro */
+.bg-pain {
+  background:
+    radial-gradient(50% 35% at 100% 0%, rgba(181, 57, 230, 0.16), transparent 70%),
+    radial-gradient(45% 30% at 0% 55%, rgba(0, 136, 255, 0.12), transparent 70%),
+    radial-gradient(50% 30% at 100% 100%, rgba(98, 0, 238, 0.12), transparent 70%),
+    #fbf9ff;
+}
+
+.marquee-paused { animation-play-state: paused; }
